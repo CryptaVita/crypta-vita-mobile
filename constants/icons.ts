@@ -18,6 +18,11 @@ const discover = require('../assets/icons/Discover.png')
 const home = require('../assets/icons/home.png')
 const message = require('../assets/icons/Message.png')
 const plusButton = require('../assets/icons/plus.png')
+const bag = require('../assets/icons/bag.png')
+const arrow_left = require('../assets/icons/arrow-left.png')
+const search_home = require('../assets/icons/search_home.png')
+const notification = require('../assets/icons/notification.png');
+const filter = require('../assets/icons/Filter.png')
 
 
-export default { logo, eye, eyeHide, google, apple, facebook, verified, camera, plus, edit, guardian_soil: guardian_soil.uri, community, weather, alerts, monitor_data, message, home, discover, destination , plusButton }
+export default {filter,  notification , bag, search_home, arrow_left, logo, eye, eyeHide, google, apple, facebook, verified, camera, plus, edit, guardian_soil: guardian_soil.uri, community, weather, alerts, monitor_data, message, home, discover, destination, plusButton }

@@ -24,10 +24,10 @@ const FormField: React.FC<FormFieldProps> = ({
 
     return (
         <View className={`space-y-2 ${otherStyles}`}>
-            <View className="w-full h-16 px-4 bg-[#CCD1D9] rounded-2xl  focus:border-primary flex flex-row items-center">
+            <View className="w-full h-16 px-4 bg-[#EFEFEF] rounded-2xl  focus:border-primary flex flex-row items-center">
                 {title !== "Country" ? (
                     <TextInput
-                        className="flex-1 text-white font-psemibold text-base"
+                        className="flex-1"
                         value={value}
                         placeholder={placeholder}
                         placeholderTextColor="#7B7B8B"
