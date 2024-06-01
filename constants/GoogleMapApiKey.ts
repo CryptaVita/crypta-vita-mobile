@@ -1,0 +1,1 @@
+export const GOOGLE_MAP_KEY = "AIzaSyBvvU6jaJbByhHnsqL2xrCT3FprNdyG6kc"
