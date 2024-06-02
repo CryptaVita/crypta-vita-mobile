@@ -7,14 +7,27 @@ import { router } from 'expo-router';
 
 const Notification = () => {
   const notifications = [
-    { id: '1', text: 'You have a new follower!', status: 'unread' },
+    { id: '1', text: 'Criptavita is announcing a serious landslide expected in your area Nyabihu please be careful!', status: 'unread' },
     { id: '2', text: 'Your post received a new comment.', status: 'read' },
     { id: '3', text: 'Update your profile information.', status: 'unread' },
+    { id: '1', text: 'Criptavita is announcing a serious landslide expected in your area Nyabihu please be careful!', status: 'unread' },
+    { id: '1', text: 'Criptavita is announcing a serious landslide expected in your area Nyabihu please be careful!', status: 'read' },
+    { id: '3', text: 'Update your profile information.', status: 'unread' },
+    { id: '1', text: 'Criptavita is announcing a serious landslide expected in your area Nyabihu please be careful!', status: 'unread' },
+    { id: '1', text: 'Criptavita is announcing a serious landslide expected in your area Nyabihu please be careful!', status: 'read' },
   ];
 
+  // @ts-ignore
   const renderItem = ({ item }) => (
-    <TouchableOpacity className={`p-4 border-b ${item.status === 'unread' ? 'bg-gray-200' : 'bg-white'}`}>
-      <Text>{item.text}</Text>
+    <TouchableOpacity className={`p-4 border-b border-[#D1D1D6] ${item.status === 'unread' ? 'bg-[#E5F2FF]' : 'bg-white'}`}>
+      <View className='flex-row space-x-2'>
+        <Image
+          source={images.avatar}
+          className='w-7 h-7'
+          resizeMode='contain'
+        />
+        <Text>{item.text}</Text>
+      </View>
     </TouchableOpacity>
   );
 
