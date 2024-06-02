@@ -107,9 +107,9 @@ const SignIn = () => {
           />
           <Text
             className='text-primary font-psemibold'
-            onPress={() => router.push("/sign-in")}
+            onPress={() => router.push("/sign-up")}
           >
-            Sign In
+            Sign Up
           </Text>
         </View>
 

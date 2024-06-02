@@ -1,7 +1,8 @@
-import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image, Alert } from "react-native";
 import * as Animatable from 'react-native-animatable';
-import React, { useState } from "react";
 import images from "@/constants/images";
+import { getCurrentLocation } from "@/constants/helper";
 
 
 const zoomIn = {
@@ -22,6 +23,13 @@ const zoomOut = {
     },
 };
 
+interface WeatherData {
+    flooding_height: number;
+    landslide_area: number;
+    message: string;
+}
+
+
 type Post = {
     id: string;
     thumbnail: string;
@@ -30,9 +38,59 @@ type Post = {
 type TrendingItemProps = {
     activeItem: string;
     item: Post;
+    setFloodsRate: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
+const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item, setFloodsRate }) => {
+    const [floodsRate, setLocalFloodsRate] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const coords = await getCurrentLocation();
+                console.log('coordinates', coords);
+                const { latitude, longitude } = coords;
+
+                // Ensure latitude and longitude are available
+                if (!latitude || !longitude) {
+                    throw new Error('Latitude and longitude are required.');
+                }
+
+                const response = await fetch('https://weather-forecasting-2m5l.onrender.com/inference', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        latitude: latitude, // Corrected field name
+                        longitude: longitude, // Corrected field name
+                    }),
+                });
+                const result = await response.json();
+                console.log('Hazard data are:', result);
+                const data = result.data;
+                if (data && data.message) {
+                    Alert.alert('Message', data.message);
+                    // Display the alert for 5 seconds
+                    setTimeout(() => {
+                        // Custom code to handle the alert closure if needed
+                    }, 5000);
+                }
+                if (data && data.flooding_height !== undefined) {
+                    setLocalFloodsRate(data.flooding_height * 100);
+                    setFloodsRate(data.flooding_height * 100);
+                    console.log('Flooding Height:', data.flooding_height); // Log flooding_height to console
+                } else {
+                    console.error('flooding_height not found in API response');
+                }
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     return (
         <Animatable.View
             className="mr-5"
@@ -58,14 +116,16 @@ const TrendingItem: React.FC<TrendingItemProps> = ({ activeItem, item }) => {
                         <View className="bg-white/50 rounded-lg p-2">
                             <Text className="text-white text-center font-semibold">Landslide 9%</Text>
                         </View>
-                        <View className="flex-row items-center justify-center space-x-5">
-                            <Text className="text-white mt-2 font-bold text-xl">Floods 20%</Text>
-                            <Image 
-                              source={images.dot}
-                              className="w-4 h-4"
-                              resizeMode="contain"
-                            />
-                        </View>
+                        {floodsRate !== null && (
+                            <View className="flex-row items-center justify-center space-x-5">
+                                <Text className="text-white mt-2 font-bold text-xl">Floods {floodsRate.toFixed(2)}</Text>
+                                <Image
+                                    source={images.dot}
+                                    className="w-4 h-4"
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        )}
                         <Text className="text-white">3 ROADS DESTROYED</Text>
                     </View>
                 </ImageBackground>
@@ -80,6 +140,7 @@ type TrendingProps = {
 
 const Trending: React.FC<TrendingProps> = ({ posts }) => {
     const [activeItem, setActiveItem] = useState(posts[0].id);
+    const [floodsRate, setFloodsRate] = useState<number | null>(null);
 
     const viewableItemChanged = ({ viewableItems }: { viewableItems: any[] }) => {
         if (viewableItems.length > 0) {
@@ -92,7 +153,7 @@ const Trending: React.FC<TrendingProps> = ({ posts }) => {
             data={posts}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-                <TrendingItem activeItem={activeItem} item={item} />
+                <TrendingItem activeItem={activeItem} item={item} setFloodsRate={setFloodsRate} />
             )}
             horizontal
             onViewableItemsChanged={viewableItemChanged}

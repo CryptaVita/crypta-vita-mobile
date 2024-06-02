@@ -35,7 +35,7 @@ const Article = () => {
           />
           <Image
             source={images.edit_profile}
-            className='absolute right-24 top-4'
+            className='absolute right-28 top-4'
           />
           <Text className='text-center font-bold my-2'>Puerto Rico</Text>
           <Text className='text-center'>youremail@domain.com | +01 234 567 89</Text>

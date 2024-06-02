@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Modal from 'react-native-modal'
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import Modal from 'react-native-modal';
+import { CodeField, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
 import CustomButton from '@/components/CustomButton';
 import { router } from 'expo-router';
 import icons from '@/constants/icons';
+import { supabase } from '../utils/supabase';
 
 const CELL_COUNT = 6;
 
@@ -18,6 +19,27 @@ const OtpVerification = () => {
         setValue,
     });
     const [isModalVisible, setModalVisible] = useState(false);
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+                console.error('Error fetching user data:', error);
+                return;
+            }
+
+            const { user } = data;
+            if (user) {
+                setUsername(user.user_metadata?.username || user.email);
+                setEmail(user.email);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
     const handleCreateAccountPress = () => {
         setModalVisible(true);
     };
@@ -30,6 +52,9 @@ const OtpVerification = () => {
     const handleCancel = () => {
         setModalVisible(false);
     };
+
+    console.log('user_meail: ',email)
+
     return (
         <SafeAreaView className='bg-primary h-full'>
             <ScrollView className='mx-2' contentContainerStyle={{ height: "100%" }}>
@@ -40,9 +65,11 @@ const OtpVerification = () => {
                 <Text className='font-bold text-3xl text-white mt-10'>
                     Verification code
                 </Text>
-                <Text className='text-white mt-2 mb-10'>
-                    Enter the code sent to example@gmail.com to verify your account.
-                </Text>
+                {email && (
+                    <Text className='text-white mt-2 mb-10'>
+                        Enter the code sent to {email} to verify your account.
+                    </Text>
+                )}
 
                 <CodeField
                     ref={ref}
@@ -58,7 +85,7 @@ const OtpVerification = () => {
                         <View
                             onLayout={getCellOnLayoutHandler(index)}
                             key={index}
-                            className={`w-12 h-12 border-[4px] rounded-full  ${isFocused ? 'border-blue-200' : 'border-white'} justify-center items-center m-1 bg-white`}
+                            className={`w-12 h-12 border-[4px] rounded-full ${isFocused ? 'border-blue-200' : 'border-white'} justify-center items-center m-1 bg-white`}
                         >
                             <Text className='text-black text-2xl'>
                                 {symbol}
@@ -71,7 +98,7 @@ const OtpVerification = () => {
                     <CustomButton
                         title='ACCEPT'
                         handlePress={handleCreateAccountPress}
-                        containerStyles='bg-white text-center w-[90%] rounded-2xl mt-8 '
+                        containerStyles='bg-white text-center w-[90%] rounded-2xl mt-8'
                         textStyles='text-primary'
                     />
                     <Text className='mt-8 text-center text-white text-xl font-bold'>RESEND CODE</Text>
@@ -93,7 +120,7 @@ const OtpVerification = () => {
                     />
                     <Text className='mt-4 text-lg font-bold'>Account Verified successfully!</Text>
                     <Text className='mt-2 text-center'>
-                        Now you can login into your account!
+                        Now you can login into your account, {username}!
                     </Text>
                     <CustomButton
                         title='ACCEPT'
