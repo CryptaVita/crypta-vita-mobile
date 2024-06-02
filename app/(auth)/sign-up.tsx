@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,7 @@ import FormField from '@/components/FormField';
 import { router } from 'expo-router';
 import Modal from 'react-native-modal';
 import icons from '@/constants/icons';
+import { supabase } from '../utils/supabase';
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -15,14 +16,29 @@ const SignUp = () => {
     password: "",
     confirmPassword: ""
   });
-
+  const [loading, setLoading] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleCreateAccountPress = () => {
     setModalVisible(true);
   };
+  async function signUpWithEmail() {
+    setLoading(true)
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+    })
 
-  const handleConfirm = () => {
+    if (error) Alert.alert(error.message)
+    if (!session) Alert.alert('Please check your inbox for email verification!')
+    setLoading(false)
+  }
+
+  const handleConfirm = async() => {
+    await signUpWithEmail();
     setModalVisible(false);
     router.push('/otp');
   };
@@ -30,6 +46,7 @@ const SignUp = () => {
   const handleCancel = () => {
     setModalVisible(false);
   };
+
 
   return (
     <SafeAreaView className='mx-4 mt-4'>
