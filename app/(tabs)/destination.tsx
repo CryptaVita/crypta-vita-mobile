@@ -70,6 +70,7 @@ const Destination = () => {
   };
 
   const onPressLocation = () => {
+    // @ts-ignore
     router.push('chooseLocation', { getCordinates: fetchValue });
   };
 

@@ -12,7 +12,7 @@ const ProfileLayout = () => {
         }}
       />
      <Stack.Screen
-        name="notification"
+        name="settings"
         options={{
           headerShown: false,
         }}
